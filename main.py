@@ -27,24 +27,22 @@ done = False
  
 clock = pygame.time.Clock()
 
-screen.fill((0,0,0))
-
 while not done:
   for event in pygame.event.get():
       if event.type == pygame.QUIT:
           done = True
+  screen.fill((0,0,0))
 
-  # for x, col in enumerate(grid):
-  #   for y, tile in enumerate(col):
-  #     if tile == 1:
-  #       pygame.draw.rect(screen,(255,255,255),(x*50,y*50,wall_size,wall_size))
-
-
+#   for x, col in enumerate(grid):
+#     for y, tile in enumerate(col):
+#       if tile == 1:
+#         pygame.draw.rect(screen,(255,255,255),(x*50,y*50,wall_size,wall_size))
+#   pygame.draw.rect(screen,(255,0,0),(p.x,p.y,wall_size/2,wall_size/2))
 
 
   ray = Ray()
-  
-  p.angle += 0.1
+
+  p.angle += 0.05
   for c in range(p.fov):
     ray.angle = p.angle + c/p.fov
     ray.x = p.x 
@@ -61,7 +59,7 @@ while not done:
       tile = grid[gx][gy]
       if tile == 1:
         d = distance(p.x,p.y,ray.x,ray.y)
-        h = d
+        h = d *0.5
         sx = (c/p.fov) * 500
         sy = 500 - h
         pygame.draw.rect(screen,(255,0,0),(sx,sy,500/p.fov,h))
