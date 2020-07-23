@@ -3,11 +3,15 @@ from player import Player
 from math import *
 import pygame
 
+def distance(x1, y1, x2, y2):
+  return ((x2-x1)**2 + (y2-y1)**2)**0.5 
+
 wall_size = 50
 p = Player()
 
-lines = open('map.txt',"r").read()
+lines = open('map.txt',"r").read().split("\n")
 grid = [[int(c) for c in line] for line in lines]
+print(grid)
 
 #p.x = W/2
 #p.y = H/2
@@ -25,41 +29,48 @@ clock = pygame.time.Clock()
 
 screen.fill((0,0,0))
 
-pos = 0
-y = 0
-for c in lines:
-  x = (pos)
-  pos += 1
-  if pos == 10:
-    pos = 0
-    y += 1
-    
-  if c == "1":
-    pygame.draw.rect(screen,(255,255,255),(x*50,y*50,wall_size,wall_size))
-    pygame.display.update()
-    print(x,y)
-
 while not done:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            done = True
+  for event in pygame.event.get():
+      if event.type == pygame.QUIT:
+          done = True
 
-    # for c in range(500):
-    #     a = p.angle - p.fov/2 + c * p.fov/500
-    #     x = p.x
-    #     y = p.y
-    #     #Wrap This In a Loop
-    #     while(0 <= x <= 500 and 0 <= y <= 500):
-    #         gx = x // wall_size
-    #         gy = y // wall_size
-    #         tile = grid[int(gx)][int(gy)]
-    #         if tile == 1:
-    #             pygame.draw.line(screen, (255,255,255), (c,0), (c,500), 1)
-    #             break
-    #         x += cos(a)
-    #         y += sin(a)
+  # for x, col in enumerate(grid):
+  #   for y, tile in enumerate(col):
+  #     if tile == 1:
+  #       pygame.draw.rect(screen,(255,255,255),(x*50,y*50,wall_size,wall_size))
 
-    pygame.display.flip()
-    clock.tick(60)
+
+
+
+  ray = Ray()
+  
+  p.angle += 0.1
+  for c in range(p.fov):
+    ray.angle = p.angle + c/p.fov
+    ray.x = p.x 
+    ray.y = p.y
+    while True:
+      ray.x += cos(ray.angle) * wall_size
+      ray.y += sin(ray.angle) * wall_size
+      gx = int(ray.x/wall_size)
+      gy = int(ray.y/wall_size)
+      if gx < 0 or gx > 9:
+        break
+      if gy < 0 or gy > 9:
+        break
+      tile = grid[gx][gy]
+      if tile == 1:
+        d = distance(p.x,p.y,ray.x,ray.y)
+        h = d
+        sx = (c/p.fov) * 500
+        sy = 500 - h
+        pygame.draw.rect(screen,(255,0,0),(sx,sy,500/p.fov,h))
+
+        
+        break
+
+  pygame.display.update()
+  pygame.display.flip()
+  clock.tick(60)
  
 pygame.quit()
