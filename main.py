@@ -103,8 +103,8 @@ while not done:
   if do_map == False:
     ray = Ray()
 
-    for c in range(p.angle,p.angle + p.fov,0.1):
-      ray.angle = c 
+    for c in range(500):
+      ray.angle = p.angle + p.fov * c/500
       ray.x = p.x 
       ray.y = p.y
       while True:
@@ -121,7 +121,7 @@ while not done:
           color = wall_colors [tile]
           d = distance(p.x,p.y,ray.x,ray.y)
           h = 500 - d
-          sx = (c/p.fov) * 500
+          sx = c
           sy = 500 - h
           pygame.draw.rect(screen,color,(sx,sy,500/p.fov,h))
 
