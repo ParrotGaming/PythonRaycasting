@@ -6,6 +6,13 @@ import pygame
 def distance(x1, y1, x2, y2):
   return ((x2-x1)**2 + (y2-y1)**2)**0.5 
 
+wall_colors = [
+(0,0,0),
+(255,0,0),
+(0,255,0),
+(0,0,255),
+]
+
 wall_size = 50
 p = Player()
 
@@ -63,27 +70,41 @@ while not done:
           dK = False
   screen.fill((0,0,0))
 
+  speed = 0
+
   if wK:
-    p.y -= 1
+    speed += 1
   if aK:
-    p.x -= 1
+    p.angle -= .1
   if sK:
-    p.y += 1
+    speed -= 1
   if dK:
-    p.x += 1
+    p.angle += .1
+  
+  p.x += cos(p.angle + p.fov/2) * speed
+  p.y += sin(p.angle + p.fov/2) * speed
 
   if do_map:
     for x, col in enumerate(grid):
       for y, tile in enumerate(col):
-        if tile == 1:
-          pygame.draw.rect(screen,(255,255,255),(x*50,y*50,wall_size,wall_size))
-    pygame.draw.rect(screen,(255,0,0),(p.x,p.y,wall_size/2,wall_size/2))
+        if tile > 0:
+          color = wall_colors[tile]
+          pygame.draw.rect(screen,(color),(x*50,y*50,wall_size,wall_size))
+    pygame.draw.rect(screen,(255,0,0),(p.x - wall_size/4 ,p.y - wall_size/4,wall_size/2,wall_size/2))
+    # line(surface, color, start_pos, end_pos, width)
+    a = (p.x + cos(p.angle) * wall_size/2, p.y + sin(p.angle) * wall_size/2)
+    b = (p.x + cos(p.angle + p.fov) * wall_size/2, p.y + sin(p.angle + p.fov) * wall_size/2)
+    pygame.draw.line(screen, (255,255,0),(p.x,p.y), a)
+    pygame.draw.line(screen, (255,255,0),(p.x,p.y), b)
+    # x = p.x + cos(p.angle) * wall_size / 2 - wall_size/8
+    # y = p.y + sin(p.angle) * wall_size / 2 - wall_size/8
+    # pygame.draw.rect(screen,(255,255,0),(x,y,wall_size/4,wall_size/4))
 
   if do_map == False:
     ray = Ray()
 
-    for c in range(p.fov):
-      ray.angle = p.angle + c/p.fov
+    for c in range(p.angle,p.angle + p.fov,0.1):
+      ray.angle = c 
       ray.x = p.x 
       ray.y = p.y
       while True:
@@ -96,12 +117,13 @@ while not done:
         if gy < 0 or gy > 9:
           break
         tile = grid[gx][gy]
-        if tile == 1:
+        if tile > 0:
+          color = wall_colors [tile]
           d = distance(p.x,p.y,ray.x,ray.y)
-          h = d
+          h = 500 - d
           sx = (c/p.fov) * 500
           sy = 500 - h
-          pygame.draw.rect(screen,(255,0,0),(sx,sy,500/p.fov,h))
+          pygame.draw.rect(screen,color,(sx,sy,500/p.fov,h))
 
           
           break
