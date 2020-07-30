@@ -84,6 +84,8 @@ while not done:
   p.x += cos(p.angle + p.fov/2) * speed
   p.y += sin(p.angle + p.fov/2) * speed
 
+  #to strafe add / subtract pi/2
+
   if do_map:
     for x, col in enumerate(grid):
       for y, tile in enumerate(col):
